@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.tags import Tag
 from app.schemas.tags import Tagscreate, Tagsupdate, TagsResponse
+from app.core.auth import get_current_user
 
 router = APIRouter(
     prefix="/tags",
@@ -15,7 +16,9 @@ def get_tags(db: Session = Depends(get_db)):
     return db.query(Tag).all()
 
 @router.post("/", response_model=TagsResponse, status_code=201)
-def create_tag(tag: Tagscreate, db: Session = Depends(get_db)):
+def create_tag(tag: Tagscreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    if current_user is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     db_tag = Tag(**tag.dict())
     db.add(db_tag)
     db.commit()
@@ -23,7 +26,9 @@ def create_tag(tag: Tagscreate, db: Session = Depends(get_db)):
     return db_tag
 
 @router.put("/{tag_id}", response_model=TagsResponse, status_code=200)
-def update_tag(tag_id: int, tag: Tagsupdate, db: Session = Depends(get_db)):
+def update_tag(tag_id: int, tag: Tagsupdate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    if current_user is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     db_tag = db.query(Tag).filter(Tag.id == tag_id).first()
     if db_tag is None:
         raise HTTPException(status_code=404, detail="Tag not found")
@@ -34,7 +39,9 @@ def update_tag(tag_id: int, tag: Tagsupdate, db: Session = Depends(get_db)):
     return db_tag
 
 @router.delete("/{tag_id}", status_code=204)
-def delete_tag(tag_id: int, db: Session = Depends(get_db)):
+def delete_tag(tag_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    if current_user is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     db_tag = db.query(Tag).filter(Tag.id == tag_id).first()
     if db_tag is None:
         raise HTTPException(status_code=404, detail="Tag not found")
