@@ -1,20 +1,20 @@
 from pydantic import BaseModel
 
-class BookCreate(BaseModel):
+class Bookcreate(BaseModel):
     title: str
     author: str
-    isbn: str
+    isbn: str | None = None
+    year: int | None = None
 
-class BookUpdate(BaseModel):
+class Bookupdate(BaseModel):
     title: str | None = None
     author: str | None = None
     isbn: str | None = None
+    year: int | None = None
 
-class BookDelete(BaseModel):
-    id: int
-
-class Book(BaseModel):
+class BookResponse(BaseModel):
     id: int
     title: str
     author: str
-    isbn: str
+    isbn: str | None
+    year: int | None
