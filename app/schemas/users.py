@@ -15,3 +15,7 @@ class UserResponse(BaseModel):
     username: str
     email: str
     date_created: str
+
+model_config = {
+    "from_attributes": True,
+}
