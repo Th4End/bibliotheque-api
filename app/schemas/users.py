@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class CreateUser(BaseModel):
     username: str
@@ -24,7 +25,7 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
-    date_created: str
+    date_created: datetime
 
     model_config = {
         "from_attributes": True
