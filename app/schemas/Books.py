@@ -18,7 +18,6 @@ class BookResponse(BaseModel):
     author: str
     isbn: str | None
     year: int | None
-
-model_config = {
-    "from_attributes": True,
-}
+    model_config = {
+        "from_attributes": True,
+    }

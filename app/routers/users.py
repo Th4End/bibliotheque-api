@@ -1,29 +1,31 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.schemas.users import UserResponse, CreateUser, UpdateUser
 from app.models.users import User
 from app.core.auth import get_current_user
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
+    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/", response_model=list[User], status_code=200)
+@router.get("/", response_model=list[UserResponse], status_code=200)
 def get_users(db: Session = Depends(get_db)):
     return db.query(User).all()
 
-@router.post("/", response_model=User, status_code=201)
-def create_user(user: User, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@router.post("/", response_model=UserResponse, status_code=201)
+def create_user(user: CreateUser, db: Session = Depends(get_db)):
     db_user = User(**user.dict())
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
-@router.put("/{user_id}", response_model=User, status_code=200)
-def update_user(user_id: int, user: User, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@router.put("/{user_id}", response_model=UserResponse, status_code=200)
+def update_user(user_id: int, user: UpdateUser, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.id == user_id).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
