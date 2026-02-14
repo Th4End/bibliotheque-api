@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.Books import Book
-from app.schemas.Books import BookCreate, Bookupdate, BookResponse
+from app.schemas.Books import Bookcreate, Bookupdate, BookResponse
 from app.core.auth import get_current_user
 
 router = APIRouter(
@@ -17,7 +17,7 @@ def get_books(db: Session = Depends(get_db)):
     return db.query(Book).all()
 
 @router.post("/", response_model= BookResponse, status_code=201)
-def create_book(book: BookCreate, db: Session = Depends(get_db)):
+def create_book(book: Bookcreate, db: Session = Depends(get_db)):
     db_book = Book(**book.dump())
     db.add(db_book)
     db.commit()
