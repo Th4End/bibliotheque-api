@@ -70,21 +70,30 @@ python -m app.main
 ---
 ## Structure du projet
 ```
-bibliotheque-api/
-├── app/
-│   ├── __init__.py
-│   ├── main.py              
-│   ├── database.py          
-│   ├── models/              
+├── app
+│   ├── core
+│   │   ├── auth.py
+│   │   └── security.py
+│   ├── models
 │   │   ├── Books.py
 │   │   ├── tags.py
 │   │   └── users.py
-│   └── routers/             
-│       ├── books.py
-│       ├── tags.py
-│       └── users.py
-├── pyproject.toml           
-└── README.md
+│   ├── routers
+│   │   ├── auth.py
+│   │   ├── books.py
+│   │   ├── tags.py
+│   │   └── users.py
+│   ├── schemas
+│   │   ├── Books.py
+│   │   ├── tags.py
+│   │   └── users.py
+│   ├── database.py
+│   └── main.py
+├── .env.example
+├── .gitignore
+├── README.md
+├── pyproject.toml
+└── uv.lock
 ```
 ---
 
