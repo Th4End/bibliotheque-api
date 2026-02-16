@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Bookcreate(BaseModel):
     title: str
     author: str

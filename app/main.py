@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.database import engine, Base
-from app.routers import books, tags, users, auth
+
+from app.database import Base, engine
+from app.routers import auth, books, tags, users
 
 app = FastAPI()
 

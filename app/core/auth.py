@@ -1,11 +1,13 @@
+from os import getenv
+
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+
 from app.database import get_db
 from app.models.users import User
-from dotenv import load_dotenv
-from os import getenv
 
 load_dotenv()
 secret_key = getenv("secret_key")

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app.database import get_db
 from app.models.tags import Tag
-from app.schemas.tags import Tagscreate, Tagsupdate, TagsResponse
-from app.core.auth import get_current_user
+from app.schemas.tags import Tagscreate, TagsResponse, Tagsupdate
 
 router = APIRouter(
     prefix="/tags",

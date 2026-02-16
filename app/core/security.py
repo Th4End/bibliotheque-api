@@ -1,8 +1,9 @@
-from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from os import getenv
+
 from dotenv import load_dotenv
-from jose import JWTError, jwt
+from jose import jwt
+from passlib.context import CryptContext
 
 load_dotenv()
 
