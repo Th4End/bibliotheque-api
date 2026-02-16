@@ -17,9 +17,9 @@ router = APIRouter(
 def get_books(db: Session = Depends(get_db)):
     return db.query(Book).all()
 
-@router.post("/", response_model= BookResponse, status_code=201)
+@router.post("/add", response_model= BookResponse, status_code=201)
 def create_book(book: Bookcreate, db: Session = Depends(get_db)):
-    db_book = Book(**book.dump())
+    db_book = Book(**book.model_dump())
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
@@ -30,7 +30,7 @@ def update_book(book_id: int, book: Bookupdate, db: Session = Depends(get_db)):
     db_book = db.query(Book).filter(Book.id == book_id).first()
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book not found")
-    for key, value in book.dump(exclude_unset=True).items():
+    for key, value in book.model_dump(exclude_unset=True).items():
         setattr(db_book, key, value)
     db.commit()
     db.refresh(db_book)

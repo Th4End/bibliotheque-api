@@ -15,7 +15,7 @@ router = APIRouter(
 def get_tags(db: Session = Depends(get_db)):
     return db.query(Tag).all()
 
-@router.post("/", response_model=TagsResponse, status_code=201)
+@router.post("/add", response_model=TagsResponse, status_code=201)
 def create_tag(tag: Tagscreate, db: Session = Depends(get_db)):
     db_tag = Tag(**tag.dict())
     db.add(db_tag)

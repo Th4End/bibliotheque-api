@@ -17,7 +17,7 @@ router = APIRouter(
 def get_users(db: Session = Depends(get_db)):
     return db.query(User).all()
 
-@router.post("/", response_model=UserResponse, status_code=201)
+@router.post("/add", response_model=UserResponse, status_code=201)
 def create_user(user: CreateUser, db: Session = Depends(get_db)):
     db_user = User(**user.model_dump())
     db.add(db_user)

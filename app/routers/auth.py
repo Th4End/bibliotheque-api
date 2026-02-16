@@ -13,8 +13,6 @@ from app.models.users import User
 from app.schemas.users import CreateUser, Token, UserLogin
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["auth"],
 )
 
 
