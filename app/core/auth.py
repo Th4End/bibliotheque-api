@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+from schemas.users import UserRole
 
 from app.database import get_db
 from app.models.users import User
@@ -43,3 +44,10 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
+def require_role(*allowed_roles: UserRole):
+    def role_checker(get_current_user: User = Depends(get_current_user)):
+        if get_current_user.role not in allowed_roles:
+            raise HTTPException(status_code=403, detail="Forbidden")
+        return get_current_user
+    return role_checker

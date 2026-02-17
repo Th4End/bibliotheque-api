@@ -1,12 +1,17 @@
 from datetime import datetime
-
 from pydantic import BaseModel
+from enum import Enum
 
+class UserRole(str, Enum):
+    USER = "user"
+    MODERATOR = "moderator"
+    ADMIN = "admin"
 
 class CreateUser(BaseModel):
     username: str
     email: str
     password: str
+    role: str | None = None
 
 
 class UpdateUser(BaseModel):
@@ -27,8 +32,10 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
+    role : UserRole
     date_created: datetime
 
     model_config = {
         "from_attributes": True
     }
+ 
