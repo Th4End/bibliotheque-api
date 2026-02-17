@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.core.auth import get_current_user
 from app.database import get_db
-from app.schemas.users import User, UserRole
-from app.core.auth import require_role
 from app.schemas.users import CreateUser, UpdateUser, UserResponse
+from app.models.users import User
+from app.core.auth import require_role
+from app.schemas.users import CreateUser, UpdateUser, UserResponse, UserRole
 
 router = APIRouter(
     prefix="/admin",
