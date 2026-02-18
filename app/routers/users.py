@@ -5,7 +5,7 @@ from app.core.auth import get_current_user
 from app.database import get_db
 from app.schemas.users import CreateUser, UpdateUser, UserResponse
 from app.models.users import User
-from app.core.auth import require_role
+from app.core.auth import require_role, upgrade_to_admin, upgrade_to_moderator, unrank_to_user
 from app.schemas.users import CreateUser, UpdateUser, UserResponse, UserRole
 
 router = APIRouter(
@@ -45,3 +45,17 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(db_user)
     db.commit()
+
+@router.put("/users/{user_id}/addadmin", response_model=UserResponse, status_code=200)
+def upgrade_user_admin(user_id: int, db: Session = Depends(get_db)):
+    return upgrade_to_admin(user_id, db)
+
+@router.put("/users/{user_id}/addmoderator", response_model=UserResponse, status_code=200)
+def upgrade_user_moderator(user_id: int, db: Session = Depends(get_db)):
+    return upgrade_to_moderator(user_id, db)
+
+
+@router.put("/users/{user_id}/unrank", response_model=UserResponse, status_code=200)
+def unrank_user_to_user(user_id: int, db: Session = Depends(get_db)):
+    return unrank_to_user(user_id=user_id, db=db)
+    

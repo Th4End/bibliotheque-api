@@ -3,7 +3,9 @@ from app.database import SessionLocal
 from app.models.users import User, UserRole
 from app.core.security import hash_password
 from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def create_default_admin():
     db: Session = SessionLocal()
@@ -25,6 +27,8 @@ def create_default_admin():
             password=hash_password(admin_password),
             role=UserRole.ADMIN,
         )
+        print(hash_password(admin_password))
+
 
         db.add(admin)
         db.commit()

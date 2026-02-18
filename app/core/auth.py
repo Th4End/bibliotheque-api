@@ -51,28 +51,30 @@ def require_role(*allowed_roles: UserRole):
         return get_current_user
     return role_checker
 
-def upgrade_to_admin(*allowed_roles: UserRole):
-    def role_checker(get_current_user: User = Depends(get_current_user)):
-        if get_current_user.role not in allowed_roles:
-            get_current_user.role = UserRole.ADMIN
-            db: Session = get_db()
-            db.add(get_current_user)
-            db.commit()
-            db.refresh(get_current_user)
-        else: 
-            raise HTTPException(status_code=403, detail="Forbidden")
-        return get_current_user
-    return role_checker
+def upgrade_to_admin(user_id: int, db: Session):
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(404, "User not found")
+    user.role = UserRole.ADMIN
+    db.commit()
+    db.refresh(user)
+    return user
 
-def unrank_to_user(*allowed_roles: UserRole):
-    def role_checker(get_current_user: User = Depends(get_current_user)):
-        if get_current_user.role in allowed_roles:
-            get_current_user.role = UserRole.USER
-            db: Session = get_db()
-            db.add(get_current_user)
-            db.commit()
-            db.refresh(get_current_user)
-        else: 
-            raise HTTPException(status_code=403, detail="Forbidden")
-        return get_current_user
-    return role_checker
+def upgrade_to_moderator(user_id: int, db: Session):
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(404, "User not found")
+    user.role = UserRole.MODERATOR
+    db.commit()
+    db.refresh(user)
+    db.commit()
+    return user
+
+def unrank_to_user(user_id: int, db: Session):
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(404, "User not found")
+    user.role = UserRole.USER
+    db.commit()
+    db.refresh(user)
+    return user
