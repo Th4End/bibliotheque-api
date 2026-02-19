@@ -9,53 +9,27 @@ from app.core.auth import require_role, upgrade_to_admin, upgrade_to_moderator, 
 from app.schemas.users import CreateUser, UpdateUser, UserResponse, UserRole
 
 router = APIRouter(
-    prefix="/admin",
-    tags=["users"],
-    dependencies=[Depends(get_current_user), Depends(require_role(UserRole.ADMIN))],
+    prefix="/user",
+    tags=["user"],
+    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
+@router.get("/profile", response_model=UserResponse, status_code=200)
+def get_profile(current_user: User = Depends(get_current_user)):
+    return current_user
 
-@router.get("/users", response_model=list[UserResponse], status_code=200)
-def get_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
-
-@router.post("/users/add", response_model=UserResponse, status_code=201)
-def create_user(user: CreateUser, db: Session = Depends(get_db)):
-    db_user = User(**user.model_dump())
-    db.add(db_user)
+@router.put("/profile", response_model=UserResponse, status_code=200)
+def update_profile(user: UpdateUser, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    update_data = user.model_dump(exclude_unset=True)
+    if "password" in update_data:
+        update_data["password"] = User.hash_password(update_data["password"])
+    for key, value in update_data.items():
+        setattr(current_user, key, value)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(current_user)
+    return current_user
 
-@router.put("/users/{user_id}", response_model=UserResponse, status_code=200)
-def update_user(user_id: int, user: UpdateUser, db: Session = Depends(get_db)):
-    db_user = db.get(User, user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    for key, value in user.model_dump(exclude_unset=True).items():
-        setattr(db_user, key, value)
+@router.delete("/profile", status_code=204)
+def delete_profile(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db.delete(current_user)
     db.commit()
-    db.refresh(db_user)
-    return db_user
-
-@router.delete("/users/{user_id}", status_code=204)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = db.get(User, user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    db.delete(db_user)
-    db.commit()
-
-@router.put("/users/{user_id}/addadmin", response_model=UserResponse, status_code=200)
-def upgrade_user_admin(user_id: int, db: Session = Depends(get_db)):
-    return upgrade_to_admin(user_id, db)
-
-@router.put("/users/{user_id}/addmoderator", response_model=UserResponse, status_code=200)
-def upgrade_user_moderator(user_id: int, db: Session = Depends(get_db)):
-    return upgrade_to_moderator(user_id, db)
-
-
-@router.put("/users/{user_id}/unrank", response_model=UserResponse, status_code=200)
-def unrank_user_to_user(user_id: int, db: Session = Depends(get_db)):
-    return unrank_to_user(user_id=user_id, db=db)
-    
