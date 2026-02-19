@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from app.services.openlibrary import fetch_openlibrary
+from app.services.googlebook import fetch_from_googlebook
 from app.core.auth import get_current_user
 from app.database import get_db
 from app.models.Books import Book
@@ -43,3 +44,22 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Book not found")
     db.delete(db_book)
     db.commit()
+
+@router.post("/isbn/{isbn}", response_model=BookResponse, status_code=200)
+def get_book_by_isbn(isbn: str, db: Session = Depends(get_db)):
+    book_data = fetch_openlibrary(isbn)
+    if book_data is None:
+        book_data = fetch_from_googlebook(isbn)
+    if book_data is None:
+        raise HTTPException(status_code=404, detail="Book not found in OpenLibrary or Google Books")
+
+    book = Book(
+        title=book_data["title"],
+        author=book_data["authors"],
+        year=book_data["year"],
+        isbn=isbn
+    )
+    db.add(book)
+    db.commit()
+    db.refresh(book)
+    return book
