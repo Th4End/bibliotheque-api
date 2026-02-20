@@ -140,6 +140,7 @@ L'application sera disponible à : `http://localhost:8000`
 | Pydantic | ≥2.12.5 | Validation de données |
 | Uvicorn | ≥0.40.0 | Serveur ASGI |
 | python-dotenv | ≥1.2.1 | Gestion variables d'environnement |
+| python-jose | ≥3.5.0 | gestion du jwt |
 ---
 
 ## Architecture
