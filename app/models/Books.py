@@ -12,3 +12,4 @@ class Book(Base):
     author: Mapped[str] = mapped_column(String(255))
     year: Mapped[int | None] = mapped_column(Integer, nullable=True)
     isbn: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)

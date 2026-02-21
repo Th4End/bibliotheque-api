@@ -15,12 +15,12 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=list[BookResponse], status_code=200)
-def get_books(db: Session = Depends(get_db)):
-    return db.query(Book).all()
+def get_books(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    return db.query(Book).filter(Book.user_id == current_user.id).all()
 
 @router.post("/add", response_model= BookResponse, status_code=201)
-def create_book(book: Bookcreate, db: Session = Depends(get_db)):
-    db_book = Book(**book.model_dump())
+def create_book(book: Bookcreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    db_book = Book(**book.model_dump(), user_id=current_user.id)
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
