@@ -10,6 +10,7 @@ dependencies = [
     "passlib>=1.7.4",
     "psycopg[binary]>=3.3.2",
     "pydantic>=2.12.5",
+    "pytest>=9.0.2",
     "python-dotenv>=1.2.1",
     "python-jose>=3.5.0",
     "requests>=2.32.5",
