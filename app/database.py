@@ -1,14 +1,20 @@
-import os
 
+import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL)
+SUPABASE_DB_URL = os.getenv("SUPABASE_DB_URL")
+
+if not SUPABASE_DB_URL:
+    raise ValueError("SUPABASE_DB_URL is not set in environment variables")
+
+DATABASE_URL = SUPABASE_DB_URL
+
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
 try:

@@ -1,38 +1,39 @@
-# 📚 Bibliotheque API
 
-Une API RESTful moderne pour la gestion d'une bibliothèque, construite avec **FastAPI** et **PostgreSQL**.
+# Bibliotheque API
 
-## Aperçu
+A modern RESTful API for library management, built with **FastAPI** and **PostgreSQL**.
 
-Bibliotheque API est une application backend robuste permettant de gérer les livres, les utilisateurs et les tags associés. Elle fournit une interface API complète pour les opérations CRUD (Create, Read, Update, Delete) sur les ressources principales d'une bibliothèque.
+## Overview
 
-### Caractéristiques principales
+Bibliotheque API is a robust backend application for managing books, users, and associated tags. It provides a complete API interface for CRUD (Create, Read, Update, Delete) operations on the main resources of a library.
 
-- ✅ Gestion des livres
-- ✅ Gestion des utilisateurs  
-- ✅ Système de tags/catégories
-- ✅ Base de données PostgreSQL
-- ✅ Validation des données avec Pydantic
-- ✅ Documentation API automatique avec Swagger UI
+### Main Features
+
+- Book management
+- User management
+- Tag/category system
+- PostgreSQL database
+- Data validation with Pydantic
+- Automatic API documentation with Swagger UI
 
 ---
 
-## Prérequis
+## Prerequisites
 
-Avant de commencer, assurez-vous d'avoir installé :
+Before you start, make sure you have installed:
 
 - **Python** ≥ 3.11.9
 - **PostgreSQL** ≥ 12
-- **uv** pour la gestion des dépendances
-- **Git** 
+- **uv** for dependency management
+- **Git**
 
-### Installation de uv
+### Install uv
 
-**Windows** (avec winget) :
+**Windows** (with winget):
 ```powershell
 winget install astral-sh.uv
 ```
-**macOS / Linux** :
+**macOS / Linux**:
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
@@ -41,34 +42,44 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ## Installation
 
-### 1. Cloner le projet
+### 1. Clone the project
 
 ```bash
 git clone <repository-url>
 cd bibliotheque-api
 ```
-### 2. Installer les dépendances
+### 2. Install dependencies
 
 ```bash
 uv sync
 ```
 
-Cette commande créera automatiquement un environnement virtuel (`.venv`) et installera toutes les dépendances.
+This command will automatically create a virtual environment (`.venv`) and install all dependencies.
 
-### 3. Configurer les variables d'environnement
+### 3. Configure environment variables
 
-Créer un fichier `.env` à la racine du projet :
+See the provided `.env.example` file and create a `.env` file at the root of the project:
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/bibliotheque
+SUPABASE_DB_URL=postgresql+psycopg://postgres:<password>@db.<project>.supabase.co:5432/postgres
+secret_key = "<your_secret_key>"
+algorithm = "HS256"
+access_token_expire_minutes = 70
+ADMIN_EMAIL = "<admin@email.com>"
+ADMIN_PASSWORD = "<admin_password>"
+Admin_Username = "admin"
+OpenLibrary_URL = "https://openlibrary.org"
+GoogleBooks_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
 ```
-### 4. Initialiser la base de données
+Replace the values with those from your Supabase project and your secrets.
+
+### 4. Initialize the database
 
 ```bash
 python -m app.main
 ```
 ---
-## Structure du projet
+## Project structure
 ```
 ├── app
 │   ├── core
@@ -99,60 +110,66 @@ python -m app.main
 
 ## API Endpoints
 
-### Livres (`/books`)
-- `GET /books/` - Récupérer tous les livres
+### Books (`/books`)
+- `GET /books/` - Retrieve all books
 
-### Utilisateurs (`/users`)
-- `GET /users/` - Récupérer tous les utilisateurs
+### Users (`/users`)
+- `GET /users/` - Retrieve all users
 
 ### Tags (`/tags`)
-- `GET /tags/` - Récupérer tous les tags
+- `GET /tags/` - Retrieve all tags
 
 ### Root
-- `GET /` - Message de bienvenue
+- `GET /` - Welcome message
 
 ---
 
-## ▶️ Exécution de l'application
+## Running the application
 
-### Démarrer le serveur de développement
+
+### Start the development server
 
 ```bash
-uvicorn app.main:app --reload
+uv run python -m uvicorn app.main:app --reload
 ```
 
-L'application sera disponible à : `http://localhost:8000`
+The application will be available at: `http://localhost:8000`
 
-### Accéder à la documentation API
+### Access the API documentation
 
-- **Swagger UI** : http://localhost:8000/docs
-- **ReDoc** : http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
 
 ---
 
-## Dépendances
+## Dependencies
 
-| Package | Version | Utilité |
-|---------|---------|---------|
-| FastAPI | ≥0.128.0 | Framework web asynchrone |
-| SQLAlchemy | ≥2.0.46 | ORM pour interactions BD |
-| Psycopg | ≥3.3.2 | Driver PostgreSQL |
-| Pydantic | ≥2.12.5 | Validation de données |
-| Uvicorn | ≥0.40.0 | Serveur ASGI |
-| python-dotenv | ≥1.2.1 | Gestion variables d'environnement |
-| python-jose | ≥3.5.0 | gestion du jwt |
+| Package        | Version    | Purpose                        |
+|---------------|------------|--------------------------------|
+| fastapi       | ≥0.128.0   | Asynchronous web framework     |
+| sqlalchemy    | ≥2.0.46    | ORM for database interactions  |
+| psycopg[binary]| ≥3.3.2    | PostgreSQL driver              |
+| pydantic      | ≥2.12.5    | Data validation                |
+| uvicorn       | ≥0.40.0    | ASGI server                    |
+| python-dotenv | ≥1.2.1     | Environment variable management|
+| python-jose   | ≥3.5.0     | JWT management                 |
+| pytest        | ≥9.0.2     | Testing framework              |
+| passlib       | ≥1.7.4     | Password hashing               |
+| bcrypt        | =4.0.1     | Password hashing (backend)     |
+| requests      | ≥2.32.5    | HTTP requests                  |
+| ruff (dev)    | ≥0.15.1    | Linter/formatter (dev only)    |
 ---
 
 ## Architecture
 
-L'application suit une architecture **modulaire en couches** :
+The application follows a **layered modular architecture**:
 
-1. **Routers** : Points d'entrée HTTP
-2. **Models** : Schémas de base de données (SQLAlchemy)
-3. **Database** : Configuration de la connexion et sessions
-4. **Main** : Inicialisation FastAPI et configuration globale
+1. **Routers**: HTTP entry points
+2. **Models**: Database schemas (SQLAlchemy)
+3. **Database**: Connection and session configuration
+4. **Main**: FastAPI initialization and global configuration
 ---
 
 ## Support
 
-Pour toute question ou problème, veuillez ouvrir une issue dans le repository.
+For any questions or issues, please open an issue in the repository.

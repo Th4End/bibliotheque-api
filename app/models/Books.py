@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, Table, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -8,8 +8,8 @@ from app.models.tags import Tag
 book_tags = Table(
     "book_tags",
     Base.metadata,
-    mapped_column("book_id", Integer, ForeignKey("books.id"), primary_key=True),
-    mapped_column("tag_id", Integer, ForeignKey("tags.id"), primary_key=True)
+    Column("book_id", Integer, ForeignKey("books.id"), primary_key=True),
+    Column("tag_id", Integer, ForeignKey("tags.id"), primary_key=True)
 )
 
 class Book(Base):
