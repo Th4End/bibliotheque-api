@@ -27,8 +27,8 @@ def create_book(book: Bookcreate, db: Session = Depends(get_db), current_user = 
     return db_book
 
 @router.put("/{book_id}", response_model=BookResponse, status_code=200)
-def update_book(book_id: int, book: Bookupdate, db: Session = Depends(get_db)):
-    db_book = db.query(Book).filter(Book.id == book_id).first()
+def update_book(book_id: int, book: Bookupdate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    db_book = db.query(Book).filter(Book.id == book_id, Book.user_id == current_user.id).first()
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book not found")
     for key, value in book.model_dump(exclude_unset=True).items():
@@ -46,7 +46,7 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
     db.commit()
 
 @router.post("/isbn/{isbn}", response_model=BookResponse, status_code=200)
-def get_book_by_isbn(isbn: str, db: Session = Depends(get_db)):
+def get_book_by_isbn(isbn: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     book_data = fetch_openlibrary(isbn)
     if book_data is None:
         book_data = fetch_from_googlebook(isbn)
@@ -57,7 +57,8 @@ def get_book_by_isbn(isbn: str, db: Session = Depends(get_db)):
         title=book_data["title"],
         author=book_data["authors"],
         year=book_data["year"],
-        isbn=isbn
+        isbn=isbn,
+        user_id= current_user.id
     )
     db.add(book)
     db.commit()
