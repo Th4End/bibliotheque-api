@@ -11,7 +11,7 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SUPABASE_STORAGE_BUCKET = os.getenv("SUPABASE_STORAGE_BUCKET", "uploads")
 
 
-def upload_file_to_supabase(file: UploadFile, folder: str) -> str:
+async def upload_file_to_supabase(file: UploadFile, folder: str) -> str:
     if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
         raise HTTPException(
             status_code=500,
@@ -38,7 +38,7 @@ def upload_file_to_supabase(file: UploadFile, folder: str) -> str:
         "x-upsert": "true",
     }
 
-    content = file.file.read()
+    content = await file.read()
     response = requests.post(upload_url, headers=headers, data=content, timeout=30)
     if response.status_code not in (200, 201):
         raise HTTPException(
