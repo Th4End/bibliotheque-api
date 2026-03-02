@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+import re
 from app.services.openlibrary import fetch_openlibrary
 from app.services.googlebook import fetch_from_googlebook
 from app.core.auth import get_current_user
@@ -13,6 +14,13 @@ router = APIRouter(
     dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
+
+
+def _normalize_isbn(raw_isbn: str) -> str:
+    normalized = re.sub(r"[^0-9Xx]", "", raw_isbn).upper()
+    if normalized.startswith("ISBN"):
+        normalized = normalized.replace("ISBN", "", 1)
+    return normalized
 
 @router.get("/", response_model=list[BookResponse], status_code=200)
 def get_books(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
@@ -47,9 +55,13 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
 
 @router.post("/isbn/{isbn}", response_model=BookResponse, status_code=200)
 def get_book_by_isbn(isbn: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    book_data = fetch_openlibrary(isbn)
+    normalized_isbn = _normalize_isbn(isbn)
+    if not normalized_isbn:
+        raise HTTPException(status_code=400, detail="Invalid ISBN")
+
+    book_data = fetch_openlibrary(normalized_isbn)
     if book_data is None:
-        book_data = fetch_from_googlebook(isbn)
+        book_data = fetch_from_googlebook(normalized_isbn)
     if book_data is None:
         raise HTTPException(status_code=404, detail="Book not found in OpenLibrary or Google Books")
 
@@ -57,7 +69,7 @@ def get_book_by_isbn(isbn: str, db: Session = Depends(get_db), current_user = De
         title=book_data["title"],
         author=book_data["authors"],
         year=book_data["year"],
-        isbn=isbn,
+        isbn=normalized_isbn,
         user_id= current_user.id
     )
     db.add(book)
