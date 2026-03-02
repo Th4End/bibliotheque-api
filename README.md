@@ -62,9 +62,6 @@ See the provided `.env.example` file and create a `.env` file at the root of the
 
 ```env
 SUPABASE_DB_URL=postgresql+psycopg://postgres:<password>@db.<project>.supabase.co:5432/postgres
-SUPABASE_URL=https://<project>.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<your_service_role_key>
-SUPABASE_STORAGE_BUCKET=uploads
 secret_key = "<your_secret_key>"
 algorithm = "HS256"
 access_token_expire_minutes = 70

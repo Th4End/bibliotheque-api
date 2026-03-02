@@ -19,4 +19,3 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(255))
     role: Mapped[UserRole] = mapped_column(String(20), default=UserRole.USER.value)
     date_created: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    profile_picture: Mapped[str | None] = mapped_column(String(255), nullable=True)

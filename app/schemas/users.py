@@ -12,14 +12,12 @@ class CreateUser(BaseModel):
     email: str
     password: str
     role: str | None = None
-    profile_picture: str | None = None
 
 
 class UpdateUser(BaseModel):
     username: str | None = None
     email: str | None = None
     password: str | None = None
-    profile_picture: str | None = None
 
 class UserLogin(BaseModel):
     email: str
@@ -36,7 +34,6 @@ class UserResponse(BaseModel):
     email: str
     role : UserRole
     date_created: datetime
-    profile_picture: str | None = None
 
     model_config = {
         "from_attributes": True

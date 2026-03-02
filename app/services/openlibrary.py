@@ -19,6 +19,5 @@ def fetch_openlibrary(isbn: str):
             "title": data.get("title"),
             "authors": [author.get("name") for author in data.get("authors", [])],
             "year": year if year else None,
-            "cover_url": f"https://covers.openlibrary.org/b/id/{data['covers'][0]}-L.jpg" if data.get("covers") else None,
         }
     
