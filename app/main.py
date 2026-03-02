@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.core.init_admin import create_default_admin
 from app.database import Base, engine
-from app.routers import admin, auth, books, tags
+from app.routers import admin, auth, books, tags, users
 from app.routers import search
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,6 +21,7 @@ app.include_router(tags.router)
 app.include_router(admin.router)
 app.include_router(auth.router)
 app.include_router(search.router)
+app.include_router(users.router)
 
 @app.on_event("startup")
 def startup_event():
