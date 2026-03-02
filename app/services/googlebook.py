@@ -19,5 +19,6 @@ def fetch_from_googlebook(isbn: str):
     return {
         "title": book_info.get("title"),
         "authors": ", ".join(book_info.get("authors", [])),
-        "year": book_info.get("publishedDate", "")[:4]
+        "year": book_info.get("publishedDate", "")[:4],
+        "cover_url": book_info.get("imageLinks", {}).get("thumbnail")
     }

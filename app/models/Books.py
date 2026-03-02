@@ -21,4 +21,5 @@ class Book(Base):
     year: Mapped[int | None] = mapped_column(Integer, nullable=True)
     isbn: Mapped[str | None] = mapped_column(String(20), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    cover_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     tags = relationship("Tag", secondary=book_tags, back_populates="books")

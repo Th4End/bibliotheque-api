@@ -28,6 +28,7 @@ def register(user: CreateUser, db: Session = Depends(get_db)):
         username=user.username,
         email=user.email,
         password=hash_password(user.password),
+        profile_picture=user.profile_picture,
         date_created=datetime.utcnow(),
     )
 

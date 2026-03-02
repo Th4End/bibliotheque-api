@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from app.services.openlibrary import fetch_openlibrary
 from app.services.googlebook import fetch_from_googlebook
@@ -6,6 +6,7 @@ from app.core.auth import get_current_user
 from app.database import get_db
 from app.models.Books import Book
 from app.schemas.Books import Bookcreate, BookResponse, Bookupdate
+from app.services.storage import upload_file_to_supabase
 
 router = APIRouter(
     prefix="/books",
@@ -58,10 +59,29 @@ def get_book_by_isbn(isbn: str, db: Session = Depends(get_db), current_user = De
         author=book_data["authors"],
         year=book_data["year"],
         isbn=isbn,
+        cover_url=book_data.get("cover_url"),
         user_id= current_user.id
     )
     db.add(book)
     db.commit()
     db.refresh(book)
     return book
+
+
+@router.put("/{book_id}/cover", response_model=BookResponse, status_code=200)
+def upload_book_cover(
+    book_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    db_book = db.query(Book).filter(Book.id == book_id, Book.user_id == current_user.id).first()
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    cover_url = upload_file_to_supabase(file=file, folder=f"books/{book_id}")
+    db_book.cover_url = cover_url
+    db.commit()
+    db.refresh(db_book)
+    return db_book
 

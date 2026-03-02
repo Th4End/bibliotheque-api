@@ -6,12 +6,16 @@ class Bookcreate(BaseModel):
     author: str
     isbn: str | None = None
     year: int | None = None
+    cover_url: str | None = None
+    tags: list[str] = []
 
 class Bookupdate(BaseModel):
     title: str | None = None
     author: str | None = None
     isbn: str | None = None
     year: int | None = None
+    cover_url: str | None = None
+    tags: list[str] | None = None
 
 class BookResponse(BaseModel):
     id: int
@@ -19,6 +23,8 @@ class BookResponse(BaseModel):
     author: str
     isbn: str | None
     year: int | None
+    cover_url: str | None
+    tags: list[str]
     model_config = {
         "from_attributes": True,
     }
