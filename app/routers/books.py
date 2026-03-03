@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 import re
 from app.services.openlibrary import fetch_openlibrary
 from app.services.googlebook import fetch_from_googlebook
+from app.services.storage import delete_file_from_supabase, upload_file_to_supabase
 from app.core.auth import get_current_user
 from app.database import get_db
 from app.models.Books import Book
@@ -46,10 +47,13 @@ def update_book(book_id: int, book: Bookupdate, db: Session = Depends(get_db), c
     return db_book
 
 @router.delete("/{book_id}", status_code=204)
-def delete_book(book_id: int, db: Session = Depends(get_db)):
-    db_book = db.query(Book).filter(Book.id == book_id).first()
+async def delete_book(book_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    db_book = db.query(Book).filter(Book.id == book_id, Book.user_id == current_user.id).first()
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book not found")
+
+    await delete_file_from_supabase(db_book.cover_url)
+
     db.delete(db_book)
     db.commit()
 
@@ -76,4 +80,26 @@ def get_book_by_isbn(isbn: str, db: Session = Depends(get_db), current_user = De
     db.commit()
     db.refresh(book)
     return book
+
+
+@router.put("/{book_id}/cover", response_model=BookResponse, status_code=200)
+async def update_book_cover(
+    book_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    db_book = db.query(Book).filter(Book.id == book_id, Book.user_id == current_user.id).first()
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    old_cover_url = db_book.cover_url
+    cover_url = await upload_file_to_supabase(file=file, folder=f"books/{book_id}")
+    if old_cover_url and old_cover_url != cover_url:
+        await delete_file_from_supabase(old_cover_url)
+
+    db_book.cover_url = cover_url
+    db.commit()
+    db.refresh(db_book)
+    return db_book
 

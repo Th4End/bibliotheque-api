@@ -21,6 +21,7 @@ class BookResponse(BaseModel):
     author: str
     isbn: str | None
     year: int | None
+    cover_url: str | None = None
     tags: list[str]
     model_config = {
         "from_attributes": True,
