@@ -48,11 +48,12 @@ def register(user: CreateUser, db: Session = Depends(get_db)):
 
     db.refresh(new_user)
 
-    token = create_access_token(data={"sub": str(new_user.id)})
+    token = create_access_token(data={"sub": str(new_user.id), "role": new_user.role})
 
     return {
         "access_token": token,
         "token_type": "bearer",
+        "role": new_user.role,
     }
 
 
@@ -64,9 +65,10 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    token = create_access_token(data={"sub": str(db_user.id)})
+    token = create_access_token(data={"sub": str(db_user.id), "role": db_user.role})
 
     return {
         "access_token": token,
         "token_type": "bearer",
+        "role": db_user.role,
     }
