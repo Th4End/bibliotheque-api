@@ -7,6 +7,7 @@ class Bookcreate(BaseModel):
     isbn: str | None = None
     year: int | None = None
     tags: list[str] = []
+    status: str | None = None
 
 class Bookupdate(BaseModel):
     title: str | None = None
@@ -14,6 +15,7 @@ class Bookupdate(BaseModel):
     isbn: str | None = None
     year: int | None = None
     tags: list[str] | None = None
+    status: str | None = None
 
 class BookResponse(BaseModel):
     id: int
@@ -23,6 +25,7 @@ class BookResponse(BaseModel):
     year: int | None
     cover_url: str | None = None
     tags: list[str]
+    status: str | None = None
     model_config = {
         "from_attributes": True,
     }
