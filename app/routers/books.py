@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 import re
 from app.services.openlibrary import fetch_openlibrary
@@ -36,11 +36,17 @@ def create_book(book: Bookcreate, db: Session = Depends(get_db), current_user = 
     return db_book
 
 @router.put("/{book_id}", response_model=BookResponse, status_code=200)
-def update_book(book_id: int, book: Bookupdate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+def update_book(
+    book_id: int,
+    book: Bookupdate | None = Body(default=None),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
     db_book = db.query(Book).filter(Book.id == book_id, Book.user_id == current_user.id).first()
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book not found")
-    for key, value in book.model_dump(exclude_unset=True).items():
+    update_payload = {} if book is None else book.model_dump(exclude_unset=True)
+    for key, value in update_payload.items():
         setattr(db_book, key, value)
     db.commit()
     db.refresh(db_book)
