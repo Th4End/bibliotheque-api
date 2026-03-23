@@ -4,13 +4,18 @@ from app.database import Base, engine
 from app.routers import admin, auth, books, tags, users, health
 from app.routers import search
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+origins = os.getenv("Origins").split(",")
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 app.add_middleware(
     CORSMiddleware, 
-    allow_origins=["*"], 
+    allow_origins=origins, 
     allow_methods=["*"], 
     allow_headers=["*"], 
     allow_credentials=True
