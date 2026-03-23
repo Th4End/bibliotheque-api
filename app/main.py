@@ -6,9 +6,10 @@ from app.routers import search
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+import json
 load_dotenv()
 
-origins = os.getenv("Origins").split(",")
+origins = json.loads(os.getenv("Origins"))
 
 app = FastAPI()
 
@@ -18,7 +19,6 @@ app.add_middleware(
     allow_origins=origins, 
     allow_methods=["*"], 
     allow_headers=["*"], 
-    allow_credentials=True
 )
 
 app.include_router(books.router)
